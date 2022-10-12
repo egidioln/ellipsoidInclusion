@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.0.0)
 project(ellipsoidInclusion VERSION 0.1.0)
 
+link_libraries(armadillo)
 include(CTest)
 enable_testing()
 

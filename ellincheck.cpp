@@ -1,5 +1,18 @@
+#include <armadillo>
 
-namespace ellipsoid
+class ellipsoid
 {
-    
-} // namespace ellipsoid
+private:
+    /* data */
+public:
+    ellipsoid(float** P, float* c);
+    ~ellipsoid();
+};
+
+// ellipsoid::ellipsoid(/* args */)
+// {
+// }
+
+ellipsoid::~ellipsoid()
+{
+}
