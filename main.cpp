@@ -1,6 +1,10 @@
 #include <iostream>
 #include <armadillo>
 #include <chrono>
+#define MAX_ITER 10000
+#define CONTAINED 0
+#define EPS_STOP 1E-6
+#define EPS_CONST 1E-6
 
 using namespace std;
 using namespace arma;
@@ -9,40 +13,58 @@ using namespace std::chrono;
 class l_cp
 {
 private:
-    int n;
-    vec csqr;
-    vec lb;
+    unsigned int _n;
+    vec _csqr;
+    vec _lb;
+    vec _lbsqr;
+    double _l;
+    double _dl;
+    double _ddl;
+    
 
 public:
-    l_cp(vec c,  vec lb)
+    double lbmin;
+    l_cp(vec c, vec lb)
     {
-        this->csqr = arma::square(c);
-        this->lb = lb;
-        this->n = lb.size();
+        this->_csqr = arma::square(c);
+        this->_lb = lb;
+        this->_lbsqr = lb % lb;
+        this->_n = lb.size();
+        this->_l = 0;
+        this->_dl = 0;
+        this->_ddl = 0;
+        this->lbmin = min(lb);
     }
-
-    double f(const double beta){
-        const vec lb_beta = this->lb * beta;
-        double out = 1 - beta;
-        for (size_t i = 0; i < this->n; i++)
+    void update(const double beta){        
+        this->_l = 1 - beta;
+        this->_dl  = -1.0;
+        this->_ddl =  0.0;
+        for (size_t i = 0; i < this->_n; i++)
         {
-            out += this->csqr[i] *lb_beta[i]/(1-lb_beta[i]); 
-        }
-        return out;
+            const double lbi_beta = this->_lb[i]*beta;
+            const double one_mlbibt2 = (1-lbi_beta)*(1-lbi_beta);
+            const double one_mlbibt3 = (1-lbi_beta)*one_mlbibt2;  
+            // cout << "x: " << lbi_beta    << endl;
+            // cout << "y: " << one_mlbibt2 << endl;
+            // cout << "z: " << one_mlbibt3 << endl;
+            this->_l += this->_csqr[i] * lbi_beta / (1 - lbi_beta); 
+            this->_dl += this->_csqr[i] * this->_lb[i] / one_mlbibt2; 
+            this->_ddl += 2 * this->_csqr[i] * this->_lbsqr[i] / one_mlbibt3; 
+        }     
     }
-    double f2(const double beta){
-        const vec aux = this->csqr % (this->lb * beta) / (1-(this->lb * beta));
-        return (1 - beta) + sum(aux);
+    double f(){
+        return this->_l;
     }
+    double df(){
+        return this->_dl;
+    }
+    double ddf(){
+        return this->_ddl;
+    }
+    
 
-    double df(const double beta){
-        double out = 1 - beta;
-        return out;
-    }
-
-    double ddf(const double beta){
-        double out = 1;
-        return out;
+    double newtownIterate(){
+        return 1*this->_dl/this->_ddl;
     }
 };
 
@@ -52,47 +74,81 @@ public:
 
 int main()
    {
-    const int n = 600;
-    vec c(n, fill::randu);
-    vec lb(n, fill::randu);
-    //const vec* csqr;
-    //const vec* lb;
+    arma_rng::set_seed_random();
+    const unsigned int n = 200;
+    unsigned int i = 0;
+    vec c(n, arma::fill::randu);
+    vec lb(n, arma::fill::randu);
 
-    c = c *0.001; // ensure inside
-    lb = arma::square(lb); //ensure positive
-
-    // algorithm starts here
+    lb = 1 / arma::abs(lb); //ensure positive
+    if (CONTAINED)
+        c = c * 0.25*(1-1/sqrt(min(lb))) / norm(c); // ensure inside
+    else 
+        c = c * 0.51*(1-1/sqrt(max(lb))) / norm(c); // ensure inside
+    
+    // define function l_cp
     l_cp l(c,lb);
-    double beta = 1;
-    for (size_t i = 0; i < 50; i++)
+
+    const double betaMax = 1-arma::dot(c,c); 
+    const double betaMin = 1/l.lbmin; 
+    cout << "beta in [" << betaMin << ", " << betaMax << "]" << endl;
+    if (betaMax<betaMin)
     {
-        if (beta>1)
-            break;
-        beta += l.df(beta) * 0.01;
+        cout << ((CONTAINED == 0)? "CORRECT" : "**INCORRECT**") << endl;
+        return 0;
     }
-    double res;
-    const int N = 10000;
-    // f1 timming
-    {
-        auto start = high_resolution_clock::now();
-        for (size_t i = 0; i < N; i++)
+    // iterate
+    double beta = betaMax;
+
+    l.update(beta);
+    auto start = high_resolution_clock::now();
+    if(l.df()<=0)
+        for ( ; i < MAX_ITER; i++)
         {
-            res = l.f2(0.2);
+            if (norm(l.df())<EPS_STOP)
+                break;
+            beta -= l.newtownIterate();
+            if (beta>betaMax)
+                beta = betaMax; 
+            else if (beta<betaMin)
+                beta = betaMin+EPS_CONST;
+            l.update(beta);
         }
-        auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stop - start);
-        cout << duration.count() << endl;
-    }
-    // f2 timming
-    {
-        auto start = high_resolution_clock::now();
-        for (size_t i = 0; i < N; i++)
-        {
-            res = l.f(0.2);
-        }
-        auto stop = high_resolution_clock::now();
-        auto duration = duration_cast<microseconds>(stop - start);
-        cout << duration.count() << endl;
-    }
+    auto stop = high_resolution_clock::now();
+    auto duration = duration_cast<microseconds>(stop - start);
+    cout << duration.count() << endl;
+    cout << "iter:\t" << i << endl;
+    cout << "beta:\t" << beta << endl;
+    cout << "gk:\t" << l.newtownIterate() << endl;
+    cout << "l:\t" << l.f() << endl;
+    cout << "dl:\t" << l.df() << endl;
+    cout << "ddl:\t" << l.ddf() << endl << endl;
+    cout << ((CONTAINED == (l.f()>=0))? "CORRECT" : "**INCORRECT**") << endl;
+    // double res;
+    // const int N = 10000;
+    // // f1 timming
+    // {
+    //     auto start = high_resolution_clock::now();
+    //     for (size_t i = 0; i < N; i++)
+    //     {
+    //         res = l.f2(0.2);
+    //     }
+    //     auto stop = high_resolution_clock::now();
+    //     auto duration = duration_cast<microseconds>(stop - start);
+    //     cout << duration.count() << endl;
+    // }
+    // // f2 timming
+    // {
+    //     auto start = high_resolution_clock::now();
+    //     for (size_t i = 0; i < N; i++)
+    //     {
+    //         res = l.f(0.2);
+    //     }
+    //     auto stop = high_resolution_clock::now();
+    //     auto duration = duration_cast<microseconds>(stop - start);
+    //     cout << duration.count() << endl;
+    // }
+
+    
     return 0; 
 }
