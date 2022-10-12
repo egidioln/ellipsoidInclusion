@@ -1,0 +1,5 @@
+
+namespace ellipsoid
+{
+    
+} // namespace ellipsoid
