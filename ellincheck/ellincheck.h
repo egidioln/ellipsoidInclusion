@@ -5,9 +5,9 @@
 
 
 #define MAX_ITER 10000
-#define CONTAINED 1
 #define EPS_STOP 1E-6
 #define EPS_CONST 1E-6
+#define CONTAINED 1
 
 using namespace arma;
 
@@ -22,18 +22,41 @@ private:
     double _l;
     double _dl;
     double _ddl;
+    double _max;
+    double _beta_ast;
     
 
 public:
     double betaMin;
     double betaMax;
     l_cp(vec c, vec lb);
-    void update(const double beta);
+    void update(const double);
     double f();
     double df();
     double ddf();
     double newtownIterate();
-    unsigned int max(double& beta);
+    double max();
+    double max(double&);
+    double max(double&, unsigned int &);
+    double max(double&, unsigned int &, unsigned int);
+};
+
+
+class ellipsoid
+{
+private:
+    unsigned int _n;
+    double _volume;
+
+public:
+    mat P;
+    vec c;
+    ellipsoid(mat , vec);
+    double volume();
+
+    
+
+    bool in(ellipsoid);
 };
 
 
