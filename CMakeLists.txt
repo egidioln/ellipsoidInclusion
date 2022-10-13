@@ -4,10 +4,12 @@ project(ellipsoidInclusion VERSION 0.1.0)
 link_libraries(armadillo)
 include(CTest)
 enable_testing()
+add_subdirectory(ellincheck)
 
-# file (GLOB_RECURSE Foo_SOURCES CONFIGURE_DEPENDS "ellincheck.cpp")
-# file (GLOB_RECURSE Foo_HEADERS CONFIGURE_DEPENDS "ellincheck.hpp")
-add_executable(ellipsoidInclusion ellincheck.cpp ellincheck.hpp main.cpp)
+
+add_executable(ellipsoidInclusion main.cpp)
+target_link_libraries(ellipsoidInclusion PRIVATE ellincheck)
+
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)

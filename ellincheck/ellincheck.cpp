@@ -1,5 +1,5 @@
 #include <armadillo>
-#include "ellincheck.hpp"
+#include "ellincheck.h"
 #include <cstdlib>
 using namespace arma;
 

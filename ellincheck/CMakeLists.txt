@@ -1,0 +1,3 @@
+add_library(ellincheck SHARED ellincheck.cpp ellincheck.h)
+target_include_directories(ellincheck PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+target_compile_definitions(ellincheck PRIVATE ACME_ELLINCHECK_EXPORTS)

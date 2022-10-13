@@ -1,7 +1,7 @@
 #include <iostream>
 #include <armadillo>
 #include <chrono>
-#include "ellincheck.hpp"
+#include "ellincheck/ellincheck.h"
 
 using namespace std;
 using namespace arma;
@@ -15,7 +15,7 @@ using namespace std::chrono;
 int main()
    {
     arma_rng::set_seed_random();
-    const unsigned int n = 10000;
+    const unsigned int n = 1000;
     unsigned int i = 0;
     vec c(n, arma::fill::randu);
     vec lb(n, arma::fill::randu);
@@ -28,7 +28,6 @@ int main()
     
     // define function l_cp
     l_cp l(c,lb);
-
 
     // iterate
     double beta = l.betaMax;
@@ -47,31 +46,6 @@ int main()
     cout << "dl:\t" << l.df() << endl;
     cout << "ddl:\t" << l.ddf() << endl << endl;
     cout << ((CONTAINED == (l.f()>=0))? "CORRECT" : "**INCORRECT**") << endl;
-    // double res;
-    // const int N = 10000;
-    // // f1 timming
-    // {
-    //     auto start = high_resolution_clock::now();
-    //     for (size_t i = 0; i < N; i++)
-    //     {
-    //         res = l.f2(0.2);
-    //     }
-    //     auto stop = high_resolution_clock::now();
-    //     auto duration = duration_cast<microseconds>(stop - start);
-    //     cout << duration.count() << endl;
-    // }
-    // // f2 timming
-    // {
-    //     auto start = high_resolution_clock::now();
-    //     for (size_t i = 0; i < N; i++)
-    //     {
-    //         res = l.f(0.2);
-    //     }
-    //     auto stop = high_resolution_clock::now();
-    //     auto duration = duration_cast<microseconds>(stop - start);
-    //     cout << duration.count() << endl;
-    // }
-
     
     return 0; 
 }
