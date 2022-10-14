@@ -1,4 +1,13 @@
 # ellipsoidInclusion
+
+| **Build Status** |
+|:----------------:|
+| [![Build Status][build-img]][build-url] |
+<!-- |  [![Codecov branch][codecov-img]][codecov-url] | -->
+[build-img]: https://github.com/egidioln/ellipsoidInclusion/workflows/CMake/badge.svg?branch=master
+[build-url]: https://github.com/egidioln/ellipsoidInclusion/actions?query=workflow%3ACMake
+
+
 This is a cpp  implementation of a program to check the inclusion of one n-ellipsoid in another
 
 For a symmetric definite matrix $P\succ0$ and a vector $c$, an ellipsoids shaped by $P$ and cetered at $c$ is defined as $E(P,c) = \\{x~:~(x-c)^\top P(x-c)\leq 1\\}$.
