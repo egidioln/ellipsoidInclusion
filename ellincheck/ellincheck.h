@@ -24,11 +24,13 @@ private:
     double _ddl;
     double _max;
     double _beta_ast;
+    unsigned int _i_ast;
     
 
 public:
     double betaMin;
     double betaMax;
+    l_cp();
     l_cp(vec c, vec lb);
     void update(const double);
     double f();
@@ -54,11 +56,10 @@ public:
     ellipsoid(mat , vec);
     double volume();
 
-    
-
-    bool in(ellipsoid);
+    bool included_in(ellipsoid);
+    bool included_in(ellipsoid, l_cp&);
 };
 
-
+bool ellincheck(double*, double*, double*, double*, unsigned int);
 
 #endif // ELLINCHECK_LIB_HPP

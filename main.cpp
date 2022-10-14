@@ -18,9 +18,9 @@ void test_lb(){
     vec c(n, arma::fill::randu);
     vec lb(n, arma::fill::randu);
     
-    lb = 1 / arma::abs(lb); //ensure positive
+    lb = 100 / arma::abs(lb); //ensure positive
     if (CONTAINED)
-        c = c * 0.25*(1-1/sqrt(min(lb))) / norm(c); // ensure inside
+        c = c * 0.9*(1-1/sqrt(min(lb))) / norm(c); // ensure inside
     else 
         c = c * 0.51*(1-1/sqrt(max(lb))) / norm(c); // ensure inside
     
@@ -51,30 +51,31 @@ void test_lb(){
 
 void test_ells(){
     arma_rng::set_seed_random();
-    const unsigned int n = 100;
+    const unsigned int n = 2;
     
     // test lb;
-    vec c(n, arma::fill::randu);
-    mat P(n, n, arma::fill::randu);
-    vec c0(n, arma::fill::randu);
-    mat P0(n, n, arma::fill::randu);
+    // vec c(n, arma::fill::randu);
+    // mat P(n, n, arma::fill::randu);
+    // vec c0(n, arma::fill::randu);
+    // mat P0(n, n, arma::fill::randu);
     
-    P *= P.t();
-    P0 *= P0.t()*0.0001;
-    c = c0 + c*0.0001;
 
-    ellipsoid el(P, c);
-    ellipsoid el0(P0, c0);
-    bool resp;
-    auto start = high_resolution_clock::now();
-    resp = el.in(el0);
-    auto stop = high_resolution_clock::now();
+    // P *= P.t()*100;
+    // P0 *= P0.t()*0.0001;
+    // c = c0 + c*0.0001;
 
-    auto duration = duration_cast<microseconds>(stop - start);
-    cout <<  "Test el in el0" << endl;
-    cout << "t:\t" << duration.count() << endl;
-    cout << "In:\t" << resp << endl;
-    
+    double c[n] = {1.5, 1.5};
+    double P[n][n] = {{4.0, 0.5},       
+                 {0.5, 6.0}};
+    double c0[n] = {1.6, 1.4};
+    double P0[n][n] = {{0.4, -0.1},
+                   {-0.1, 0.5}};
+
+            
+
+
+
+    ellincheck(c, *P, c0, *P0, n);
 }
 
 
