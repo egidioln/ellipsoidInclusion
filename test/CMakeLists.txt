@@ -1,0 +1,2 @@
+add_executable(ellipsoidInclusionTest main_test.cpp)
+target_link_libraries(ellipsoidInclusionTest PRIVATE ellincheck)

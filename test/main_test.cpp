@@ -1,7 +1,7 @@
 #include <iostream>
 #include <armadillo>
 #include <chrono>
-#include "ellincheck/ellincheck.h"
+#include "../src/ellincheck.h"
 
 using namespace std;
 using namespace arma;
@@ -88,15 +88,27 @@ bool test_ells(bool contained){
 }
 
 
-int main()
+int main(int argc, char *argv[])
    {
-    bool allOk = true;
-    allOk &= test_lb(CONTAINED);
+    switch (argv[1][0])
+    {
+        case '1':
+            return !test_lb(CONTAINED);
+            break;
+        case '2':
+            return !test_lb(NOT_CONTAINED);
+            break;
+        case '3':
+            return !test_ells(CONTAINED);
+            break;
+        case '4':
+            return !test_ells(NOT_CONTAINED);
+            break;
 
-    allOk &= test_lb(NOT_CONTAINED);
-    allOk &= test_ells(CONTAINED); 
-    allOk &= test_ells(NOT_CONTAINED); 
-    cout << "Test res: " << allOk << endl;
-
-    return !allOk; 
+    
+        default:
+            cout << "Error: missing argument" << endl;
+            return 0;
+            break;
+    }
 }
