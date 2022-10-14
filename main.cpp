@@ -9,9 +9,9 @@ using namespace std::chrono;
 
 
 
-void test_lb(){
+bool test_lb(bool contained){
     arma_rng::set_seed_random();
-    const unsigned int n = 1000;
+    const unsigned int n = 3;
     unsigned int i = 0;
     
     // test lb;
@@ -19,10 +19,10 @@ void test_lb(){
     vec lb(n, arma::fill::randu);
     
     lb = 100 / arma::abs(lb); //ensure positive
-    if (CONTAINED)
+    if (contained)
         c = c * 0.9*(1-1/sqrt(min(lb))) / norm(c); // ensure inside
     else 
-        c = c * 0.51*(1-1/sqrt(max(lb))) / norm(c); // ensure inside
+        c = c * (1-0.5/sqrt(max(lb))) / norm(c); // ensure outside
     
     // define function l_cp
     l_cp l(c,lb);
@@ -43,13 +43,13 @@ void test_lb(){
     cout << "l:\t" << l.f() << endl;
     cout << "dl:\t" << l.df() << endl;
     cout << "ddl:\t" << l.ddf() << endl << endl;
-    cout << ((CONTAINED == (l.f()>=0))? "CORRECT" : "**INCORRECT**") << endl;
+    return contained == (l.f()>=0);
 
 }
 
 
 
-void test_ells(){
+bool test_ells(bool contained){
     arma_rng::set_seed_random();
     const unsigned int n = 2;
     
@@ -63,25 +63,40 @@ void test_ells(){
     // P *= P.t()*100;
     // P0 *= P0.t()*0.0001;
     // c = c0 + c*0.0001;
-
-    double c[n] = {1.5, 1.5};
-    double P[n][n] = {{4.0, 0.5},       
-                 {0.5, 6.0}};
-    double c0[n] = {1.6, 1.4};
-    double P0[n][n] = {{0.4, -0.1},
-                   {-0.1, 0.5}};
-
+    if (contained){
+        double c[n] = {1.5, 1.5};
+        double P[n][n] = {{4.0, 0.5},       
+                    {0.5, 6.0}};
+        double c0[n] = {1.6, 1.4};
+        double P0[n][n] = {{0.4, -0.1},
+                    {-0.1, 0.5}};
+        return contained == ellincheck(c, *P, c0, *P0, n);
+    }
+    else{
+        double c[n] = {1.6, 1.4};
+        double P[n][n] = {{0.4, -0.1},
+                    {-0.1, 0.5}};
+        double c0[n] = {1.5, 1.5};
+        double P0[n][n] = {{4.0, 0.5},       
+                    {0.5, 6.0}};
+        return contained == ellincheck(c, *P, c0, *P0, n);
+    }
             
 
 
 
-    ellincheck(c, *P, c0, *P0, n);
 }
 
 
 int main()
    {
-    test_lb();
-    test_ells(); 
-    return 0; 
+    bool allOk = true;
+    allOk &= test_lb(CONTAINED);
+
+    allOk &= test_lb(NOT_CONTAINED);
+    allOk &= test_ells(CONTAINED); 
+    allOk &= test_ells(NOT_CONTAINED); 
+    cout << "Test res: " << allOk << endl;
+
+    return !allOk; 
 }

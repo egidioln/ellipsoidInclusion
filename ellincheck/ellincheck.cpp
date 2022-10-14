@@ -100,7 +100,7 @@ double l_cp::max(double& beta, unsigned int &i, unsigned int max_iter){
         cout << "Warning: empty interval" << endl;
         return this->_max = -INFINITY; // empty interval
     }
-    
+    beta = this->betaMax;
     this->update(beta);
     if(this->df()<=0)
     {

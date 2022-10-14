@@ -7,7 +7,8 @@
 #define MAX_ITER 10000
 #define EPS_STOP 1E-6
 #define EPS_CONST 1E-6
-#define CONTAINED 1
+#define CONTAINED true
+#define NOT_CONTAINED false
 
 using namespace arma;
 

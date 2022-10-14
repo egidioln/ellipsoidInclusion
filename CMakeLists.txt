@@ -13,3 +13,6 @@ target_link_libraries(ellipsoidInclusion PRIVATE ellincheck)
 set(CPACK_PROJECT_NAME ${PROJECT_NAME})
 set(CPACK_PROJECT_VERSION ${PROJECT_VERSION})
 include(CPack)
+
+add_test(NAME ellipsoidInclusion
+         COMMAND ellipsoidInclusion)
