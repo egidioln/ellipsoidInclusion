@@ -4,7 +4,7 @@
 |:----------------:|
 | [![Build Status][build-img]][build-url] |
 <!-- |  [![Codecov branch][codecov-img]][codecov-url] | -->
-[build-img]: https://github.com/egidioln/ellipsoidInclusion/workflows/CMake/badge.svg?branch=master
+[build-img]: https://github.com/egidioln/ellipsoidInclusion/workflows/CMake/badge.svg?branch=main
 [build-url]: https://github.com/egidioln/ellipsoidInclusion/actions?query=workflow%3ACMake
 
 
