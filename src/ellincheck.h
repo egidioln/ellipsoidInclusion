@@ -25,6 +25,7 @@ private:
     double _ddl;
     double _max;
     double _beta_ast;
+    double _delta_ub;
     unsigned int _i_ast;
     
 

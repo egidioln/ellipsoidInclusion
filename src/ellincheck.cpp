@@ -13,8 +13,9 @@ l_cp::l_cp(){
 
 l_cp::l_cp(vec c, vec lb)
 {
+    using namespace arma;
     this->_c = c;
-    this->_csqr = arma::square(c);
+    this->_csqr = square(c);
     this->_lb = lb;
     this->_lbsqr = lb % lb;
     this->_n = lb.size();
@@ -24,9 +25,24 @@ l_cp::l_cp(vec c, vec lb)
     this->_max = 1;
     this->_beta_ast = 1;
     this->_i_ast = 1;
+    
+    unsigned int idx = index_min(lb);
+    const double lmin = lb[idx];
+    const double cmin = c[idx];
+    const double b = cmin*cmin*lmin-1-lmin;
 
-    this->betaMax = 1-arma::dot(c, c); 
-    this->betaMin = 1/arma::min(lb); 
+    this-> _delta_ub = b*b-4*lmin;
+
+    if (_delta_ub>0)
+    {
+        this->betaMax = std::min(1-dot(c, c), (-b-sqrt(_delta_ub))/2/lmin);
+        this->betaMin = std::max(1/lmin, (-b+sqrt(_delta_ub))/2/lmin);
+    }
+    else
+    {
+        this->betaMax = 1-dot(c, c); 
+        this->betaMin = 1-dot(c, c);//1/lmin; 
+    }
 
     // cout << "c:\t" << c << endl;
     // cout << "lb:\t" << lb << endl;
