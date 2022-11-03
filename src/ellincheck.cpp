@@ -33,10 +33,10 @@ l_cp::l_cp(vec c, vec lb)
 
     this-> _delta_ub = b*b-4*lmin;
 
-    if (_delta_ub>0)
+    if (_delta_ub>=0)
     {
-        this->betaMax = std::min(1-dot(c, c), (-b-sqrt(_delta_ub))/2/lmin);
-        this->betaMin = std::max(1/lmin, (-b+sqrt(_delta_ub))/2/lmin);
+        this->betaMax = std::min(1-dot(c, c), (-b+sqrt(_delta_ub))/2/lmin);
+        this->betaMin = std::max(1/lmin, (-b-sqrt(_delta_ub))/2/lmin);
     }
     else
     {
@@ -114,6 +114,7 @@ double l_cp::max(double& beta, unsigned int &i, unsigned int max_iter){
     if (this->betaMax<this->betaMin)
     {
         cout << "Warning: empty interval" << endl;
+        this->_l = -INFINITY;
         return this->_max = -INFINITY; // empty interval
     }
     beta = this->betaMax;
