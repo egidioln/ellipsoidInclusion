@@ -37,3 +37,16 @@ Classes can also be defined as follows:
 ```
 where `P` and `P0` must be `arma::mat` and `c` and `c0` must be `arma::vec` ([check the Armadillo c++ library](https://arma.sourceforge.net/docs.html) for more details on these types).
 
+The method implemented in this library is available in [this paper](https://arxiv.org/abs/2211.06237). Please, cite it as:
+```
+@misc{calbert2022efficient,
+  doi = {10.48550/ARXIV.2211.06237},
+  url = {https://arxiv.org/abs/2211.06237},
+  author = {Calbert, Julien and Egidio, Lucas N. and Jungers, Raphaël M.},
+  title = {An Efficient Method to Verify the Inclusion of Ellipsoids},
+  publisher = {preprint (arXiv)},
+  year = {2022},
+}
+
+```
+
